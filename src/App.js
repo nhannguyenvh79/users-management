@@ -5,7 +5,7 @@ import ListUsers from "./screens/ListUsers";
 
 function App() {
   return (
-    <div className="App">
+    <div className="app-container">
       <Header />
       <ListUsers />
     </div>
