@@ -3,6 +3,7 @@ import { Form, InputGroup, Toast } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { postNewUser } from "../services/UserService";
+import { AiOutlinePlusCircle } from "./icons";
 
 function AddUserModal() {
   const [show, setShow] = useState(false);
@@ -25,7 +26,7 @@ function AddUserModal() {
   return (
     <>
       <Button className="btn btn-success" onClick={handleShow}>
-        Add user
+        <AiOutlinePlusCircle className="fs-6 mb-1" /> Add user
       </Button>
 
       <Modal show={show} onHide={handleClose}>
