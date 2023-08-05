@@ -3,8 +3,14 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import img192 from "../assets/logo192.png";
+import { NavLink, useNavigate } from "react-router-dom";
+import { FiLogOut } from "./icons";
 
 export default function Header() {
+    const navigate = useNavigate();
+    const activeClass = (params) => {
+        return params.isActive ? "active-item" : "";
+    };
     return (
         <>
             <Navbar expand="lg" className="bg-body-tertiary">
@@ -14,20 +20,29 @@ export default function Header() {
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
-                            <Nav.Link href="/">Home</Nav.Link>
-                            <Nav.Link href="/">Manage User</Nav.Link>
+                        <Nav className="me-auto d-flex gap-20">
+                            <NavLink to="/" className={activeClass}>
+                                Home
+                            </NavLink>
+                            <NavLink to="/userlist" className={activeClass}>
+                                Manage User
+                            </NavLink>
                         </Nav>
                         <Nav>
                             <NavDropdown
                                 title="Name..."
                                 id="basic-nav-dropdown"
                             >
-                                <NavDropdown.Item href="#action/3.1">
+                                <NavDropdown.Item
+                                    onClick={() => navigate("/login")}
+                                >
                                     Log In
                                 </NavDropdown.Item>
-                                <NavDropdown.Item href="#action/3.2">
-                                    Log Out
+                                <NavDropdown.Item
+                                    className="text-danger"
+                                    onClick={() => navigate("/login")}
+                                >
+                                    Log Out <FiLogOut />
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>

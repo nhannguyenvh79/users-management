@@ -18,9 +18,30 @@ code {
     monospace;
 }
 
+a {
+  text-decoration: none;
+  color: black;
+}
+.gap-20{
+  gap: 20px;
+}
+.min-vh-70{
+  min-height: 70vh;
+}
+
+
 .app-container{
   .toast{
     display: absolute;
   }
-
+  .active-item{
+    border-bottom: 1px solid rgb(97, 218, 251);
+    color: rgb(97, 218, 251);
+  }
+  .form{
+    background-color: aliceblue;
+    padding: 20px;
+    width: 400px;
+    border-radius: 5px;
+  }
 }

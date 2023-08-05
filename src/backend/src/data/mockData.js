@@ -198,4 +198,21 @@ const users = [
         email: "arysdalew@rakuten.co.jp",
     },
 ];
+export const accounts = [
+    {
+        id: 1,
+        email: "member.react@gmail.com",
+        password: "12345",
+        token: "",
+        type: "member",
+    },
+    {
+        id: 2,
+        email: "admin.react@gmail.com",
+        password: "12345",
+        token: "",
+        type: "admin",
+    },
+];
+
 export default users;

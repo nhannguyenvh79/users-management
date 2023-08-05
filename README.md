@@ -6,7 +6,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
-### cd backend file `npm run dev` to run server backend
+### `cd backend` , `npm run dev` to run backend server
+
+GUEST: just see Home Page\
+MEMBER: need sign up account, sign in this account to access user list\
+ADMIN: "CRUD" user list, export-import excel file\
 
 ### `npm start`
 

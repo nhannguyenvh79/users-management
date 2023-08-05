@@ -1,56 +1,13 @@
 import express from "express";
 import { v4 as uuid } from "uuid";
 import data from "../data/mockData.js";
+import checkAuth from "../middleware/checkAuth.js";
+
 export const usersRouter = express.Router();
 
 let users = data;
-const handleSort = (sortBy, SortField) => {
-    console.log(users);
-    let termUsers = users.slice();
-    switch (SortField) {
-        case "first_name":
-            if (sortBy && SortField && sortBy === "asc") {
-                termUsers.sort((a, b) =>
-                    a[SortField].toUpperCase().localeCompare(
-                        b[SortField].toUpperCase()
-                    )
-                );
-            } else if (sortBy && SortField && sortBy === "desc") {
-                termUsers.sort((a, b) =>
-                    b[SortField].toUpperCase().localeCompare(
-                        a[SortField].toUpperCase()
-                    )
-                );
-            }
-            return termUsers;
 
-        case "id":
-            if (sortBy && SortField && sortBy === "asc") {
-                termUsers.sort((a, b) => a[SortField] - b[SortField]);
-            } else if (sortBy && SortField && sortBy === "desc") {
-                termUsers.sort((a, b) => b[SortField] - a[SortField]);
-            }
-            return termUsers;
-
-        default:
-            if (sortBy && SortField && sortBy === "asc") {
-                termUsers.sort((a, b) => a[SortField] - b[SortField]);
-            } else if (sortBy && SortField && sortBy === "desc") {
-                termUsers.sort((a, b) => b[SortField] - a[SortField]);
-            }
-            return termUsers;
-    }
-};
-
-const handleFilter = (users, searchKey) => {
-    if (searchKey) {
-        return users.filter((user) => user.email.includes(searchKey));
-    } else {
-        return users;
-    }
-};
-
-usersRouter.get("/", (req, res) => {
+usersRouter.get("/", checkAuth, (req, res) => {
     let newUsers = handleSort(req.query.sortBy, req.query.sortField);
 
     newUsers = handleFilter(newUsers, req.query.searchKey);
@@ -90,7 +47,6 @@ usersRouter.post("/", (req, res) => {
     if (req.body) {
         const data = { ...req.body, id: uuid() };
         users.push(data);
-        console.log(data);
         res.json({
             status: "success",
             message: "student data saved successfully",
@@ -139,3 +95,48 @@ usersRouter.delete("/:userId", (req, res) => {
         });
     }
 });
+
+const handleSort = (sortBy, SortField) => {
+    let termUsers = users.slice();
+    switch (SortField) {
+        case "first_name":
+            if (sortBy && SortField && sortBy === "asc") {
+                termUsers.sort((a, b) =>
+                    a[SortField].toUpperCase().localeCompare(
+                        b[SortField].toUpperCase()
+                    )
+                );
+            } else if (sortBy && SortField && sortBy === "desc") {
+                termUsers.sort((a, b) =>
+                    b[SortField].toUpperCase().localeCompare(
+                        a[SortField].toUpperCase()
+                    )
+                );
+            }
+            return termUsers;
+
+        case "id":
+            if (sortBy && SortField && sortBy === "asc") {
+                termUsers.sort((a, b) => a[SortField] - b[SortField]);
+            } else if (sortBy && SortField && sortBy === "desc") {
+                termUsers.sort((a, b) => b[SortField] - a[SortField]);
+            }
+            return termUsers;
+
+        default:
+            if (sortBy && SortField && sortBy === "asc") {
+                termUsers.sort((a, b) => a[SortField] - b[SortField]);
+            } else if (sortBy && SortField && sortBy === "desc") {
+                termUsers.sort((a, b) => b[SortField] - a[SortField]);
+            }
+            return termUsers;
+    }
+};
+
+const handleFilter = (users, searchKey) => {
+    if (searchKey) {
+        return users.filter((user) => user.email.includes(searchKey));
+    } else {
+        return users;
+    }
+};
