@@ -3,20 +3,27 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { deleteUser } from "../services/UserService";
 import { Toast } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 function DeleteUserModal(props) {
     const [show, setShow] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
+    const navigate = useNavigate();
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleDelete = async () => {
-        const res = await deleteUser(props.userId);
-        console.log(props.userId);
-        console.log(res);
-        handleClose();
-        setShowToast(true);
-        props.reloadTable();
+        try {
+            const res = await deleteUser(props.userId);
+            console.log(res);
+            handleClose();
+            setShowToast(true);
+            props.reloadTable();
+        } catch (error) {
+            if (error && error.response.data.message === "jwt expired")
+                navigate("/login");
+        }
     };
     return (
         <>

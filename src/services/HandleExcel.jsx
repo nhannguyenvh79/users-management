@@ -8,7 +8,6 @@ import { Button, Modal, Table } from "react-bootstrap";
 export const ExportToExcelButton = (props) => {
     const exportToExcel = async () => {
         const data = await fetchAllUsers();
-        console.log(data.users);
 
         const worksheet = XLSX.utils.json_to_sheet(data.users);
         const workbook = XLSX.utils.book_new();
@@ -59,7 +58,6 @@ export const ImportExcelData = () => {
             const worksheet = workbook.Sheets[firstSheetName];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-            console.log(jsonData);
             const isCheck = jsonData.every(
                 (el) =>
                     el.hasOwnProperty("id") &&
@@ -84,7 +82,6 @@ export const ImportExcelData = () => {
     const handleUpdateList = async () => {
         handleClose();
         const res = await putUsers(data);
-        console.log(res);
         window.location.reload();
     };
 

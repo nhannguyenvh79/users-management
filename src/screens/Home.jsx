@@ -4,14 +4,13 @@ import { Container } from "react-bootstrap";
 function HomePage() {
     return (
         <Container className="d-flex flex-column align-items-center my-5">
-            <h5>`cd backend` , `npm run dev` to run backend server</h5>
+            <h5>INFORMATION:</h5>
 
             <p className="mt-5">
-                <b>GUEST</b>: just see Home Page
+                <b>GUEST</b>: Home page only
             </p>
             <p>
-                <b>MEMBER</b>: need sign up account, sign in this account to
-                access user list
+                <b>MEMBER</b>: Access user list
             </p>
             <p>
                 <b>ADMIN</b>: "CRUD" user list, export-import excel file
@@ -21,6 +20,9 @@ function HomePage() {
             </p>
             <p>
                 <b>ADMIN ACCOUNT: </b>admin.react@gmail.com - 12345
+            </p>
+            <p className="mt-5">
+                <b>SIGN UP: </b> Member account only
             </p>
         </Container>
     );

@@ -6,33 +6,46 @@ import ReactPaginate from "react-paginate";
 import EditUserModal from "./EditUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import { FaSolidSort } from "./icons";
+import { Link, useNavigate } from "react-router-dom";
+import LogIn from "../screens/Login.jsx";
+import { useContext } from "react";
+import { LogInConText } from "../context/LogInContext";
 
 function TableUsers(props) {
     const [users, setUsers] = useState([]);
+    const { logInValue } = useContext(LogInConText);
 
     const [totalUsers, setTotalusers] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
 
     const [sortBy, setSortBy] = useState("asc");
     const [sortField, setSortField] = useState("id");
 
     useEffect(() => {
-        getUsers(currentPage, sortBy, sortField, props.searchKey);
+        getUsers();
     }, [currentPage, sortBy, sortField, props.searchKey]);
 
-    const getUsers = async (page, sortBy, sortField, searchKey) => {
-        const res = await fetchUsers(page, sortBy, sortField, searchKey);
-        if (res && res.data) {
-            setUsers(res.data);
-            setTotalPages(res.totalPages);
-            setTotalusers(res.total);
+    const getUsers = async () => {
+        try {
+            const res = await fetchUsers(
+                currentPage,
+                sortBy,
+                sortField,
+                props.searchKey
+            );
+            if (res && res.data) {
+                setUsers(res.data);
+                setTotalPages(res.totalPages);
+                setTotalusers(res.total);
+                setIsLoading(false);
+            }
+        } catch (error) {
+            setError(`${error.response.data.message}! please login again`);
             setIsLoading(false);
-        } else {
-            setIsLoading(true);
-            console.log("something wrong!");
         }
     };
 
@@ -48,6 +61,20 @@ function TableUsers(props) {
     const reloadTable = () => {
         getUsers(currentPage, sortBy, sortField, props.searchKey);
     };
+
+    if (error) {
+        return (
+            <>
+                <div className="text-danger">
+                    Something went wrong: {error}!
+                </div>
+                <Link className="text-primary" to="/login" element={<LogIn />}>
+                    Click to login &#8594;
+                </Link>
+            </>
+        );
+    }
+
     return (
         <>
             {isLoading ? (
@@ -105,20 +132,37 @@ function TableUsers(props) {
                                             <td>{user.last_name}</td>
                                             <td>{user.email}</td>
                                             <td>
-                                                <EditUserModal
-                                                    userId={user.id}
-                                                    firstName={user.first_name}
-                                                    lastName={user.last_name}
-                                                    email={user.email}
-                                                    reloadTable={reloadTable}
-                                                />
-                                                <DeleteUserModal
-                                                    userId={user.id}
-                                                    firstName={user.first_name}
-                                                    lastName={user.last_name}
-                                                    email={user.email}
-                                                    reloadTable={reloadTable}
-                                                />
+                                                {logInValue.account.type ===
+                                                    "admin" && (
+                                                    <>
+                                                        <EditUserModal
+                                                            userId={user.id}
+                                                            firstName={
+                                                                user.first_name
+                                                            }
+                                                            lastName={
+                                                                user.last_name
+                                                            }
+                                                            email={user.email}
+                                                            reloadTable={
+                                                                reloadTable
+                                                            }
+                                                        />
+                                                        <DeleteUserModal
+                                                            userId={user.id}
+                                                            firstName={
+                                                                user.first_name
+                                                            }
+                                                            lastName={
+                                                                user.last_name
+                                                            }
+                                                            email={user.email}
+                                                            reloadTable={
+                                                                reloadTable
+                                                            }
+                                                        />
+                                                    </>
+                                                )}
                                             </td>
                                         </tr>
                                     );

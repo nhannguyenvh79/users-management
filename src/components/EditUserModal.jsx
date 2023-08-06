@@ -3,6 +3,7 @@ import { Form, InputGroup, Toast } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { putUser } from "../services/UserService";
+import { useNavigate } from "react-router-dom";
 
 function EditUserModal(props) {
     const [show, setShow] = useState(false);
@@ -20,12 +21,19 @@ function EditUserModal(props) {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    const navigate = useNavigate();
+
     const handleEdit = async () => {
-        const res = await putUser(firstName, lastName, email, props.userId);
-        console.log(res);
-        handleClose();
-        setShowToast(true);
-        props.reloadTable();
+        try {
+            const res = await putUser(firstName, lastName, email, props.userId);
+            console.log(res);
+            handleClose();
+            setShowToast(true);
+            props.reloadTable();
+        } catch (error) {
+            if (error && error.response.data.message === "jwt expired")
+                navigate("/login");
+        }
     };
 
     return (

@@ -1,20 +1,27 @@
-import Jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-const checkAuth = (req, res, next) => {
-    const token = req.headers["x-access-token"];
+const checkAuth = (types) => {
+    return (req, res, next) => {
+        const token = req.headers["x-access-token"];
 
-    if (!token) {
-        return res.status(400).json({
-            message: "token is not provided",
-        });
-    }
-    try {
-        const decoded = Jwt.verify(token, process.env.SECRET_KEY);
-        console.log(decoded);
-        next();
-    } catch (error) {
-        console.log(error);
-        res.json(error);
-    }
+        if (!token) {
+            return res.status(400).json({
+                message: "token is not provided",
+            });
+        }
+        try {
+            const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+            const isAccess = types?.includes(decoded.type);
+
+            if (isAccess) {
+                next();
+            } else {
+                throw new Error({ message: "cannot access" });
+            }
+        } catch (error) {
+            return res.status(401).json(error);
+        }
+    };
 };
 export default checkAuth;

@@ -7,7 +7,10 @@ export const usersRouter = express.Router();
 
 let users = data;
 
-usersRouter.get("/", checkAuth, (req, res) => {
+const auth1 = ["admin"];
+const auth2 = ["member", "admin"];
+
+usersRouter.get("/", checkAuth(auth2), (req, res) => {
     let newUsers = handleSort(req.query.sortBy, req.query.sortField);
 
     newUsers = handleFilter(newUsers, req.query.searchKey);
@@ -26,11 +29,11 @@ usersRouter.get("/", checkAuth, (req, res) => {
     });
 });
 
-usersRouter.get("/all", (req, res) => {
+usersRouter.get("/all", checkAuth(auth1), (req, res) => {
     res.json({ users });
 });
 
-usersRouter.get("/:userId", (req, res) => {
+usersRouter.get("/:userId", checkAuth(auth2), (req, res) => {
     const user = users.find((el) => el.id == req.params.userId);
     if (user) {
         res.json({
@@ -43,7 +46,7 @@ usersRouter.get("/:userId", (req, res) => {
     }
 });
 
-usersRouter.post("/", (req, res) => {
+usersRouter.post("/", checkAuth(auth1), (req, res) => {
     if (req.body) {
         const data = { ...req.body, id: uuid() };
         users.push(data);
@@ -56,7 +59,7 @@ usersRouter.post("/", (req, res) => {
     }
 });
 
-usersRouter.put("/:userId", (req, res) => {
+usersRouter.put("/:userId", checkAuth(auth1), (req, res) => {
     const indexUser = users.findIndex((el) => el.id == req.params.userId);
 
     if (indexUser === 0 || indexUser) {
@@ -73,7 +76,7 @@ usersRouter.put("/:userId", (req, res) => {
         });
     }
 });
-usersRouter.put("/", (req, res) => {
+usersRouter.put("/", checkAuth(auth1), (req, res) => {
     if (req.body && req.body.data) {
         users = req.body.data;
         res.json({ message: "successfull" });
@@ -82,7 +85,7 @@ usersRouter.put("/", (req, res) => {
     }
 });
 
-usersRouter.delete("/:userId", (req, res) => {
+usersRouter.delete("/:userId", checkAuth(auth1), (req, res) => {
     let indexUser = users.findIndex((el) => el.id === +req.params.userId);
     if (indexUser === 0 || indexUser) {
         users.splice(indexUser, 1);

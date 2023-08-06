@@ -5,12 +5,17 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import img192 from "../assets/logo192.png";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FiLogOut } from "./icons";
+import { useContext } from "react";
+import { LogInConText } from "../context/LogInContext";
 
 export default function Header() {
     const navigate = useNavigate();
+
     const activeClass = (params) => {
         return params.isActive ? "active-item" : "";
     };
+
+    const { logInValue, resetLogIn } = useContext(LogInConText);
     return (
         <>
             <Navbar expand="lg" className="bg-body-tertiary">
@@ -29,22 +34,24 @@ export default function Header() {
                             </NavLink>
                         </Nav>
                         <Nav>
-                            <NavDropdown
-                                title="Name..."
-                                id="basic-nav-dropdown"
-                            >
-                                <NavDropdown.Item
-                                    onClick={() => navigate("/login")}
+                            {!logInValue.account.email ? (
+                                <NavLink to="/login">Log In</NavLink>
+                            ) : (
+                                <NavDropdown
+                                    title={logInValue.account.email}
+                                    id="basic-nav-dropdown"
                                 >
-                                    Log In
-                                </NavDropdown.Item>
-                                <NavDropdown.Item
-                                    className="text-danger"
-                                    onClick={() => navigate("/login")}
-                                >
-                                    Log Out <FiLogOut />
-                                </NavDropdown.Item>
-                            </NavDropdown>
+                                    <NavDropdown.Item
+                                        className="text-danger"
+                                        onClick={() => {
+                                            navigate("/login");
+                                            resetLogIn();
+                                        }}
+                                    >
+                                        Log Out <FiLogOut />
+                                    </NavDropdown.Item>
+                                </NavDropdown>
+                            )}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

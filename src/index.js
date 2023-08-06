@@ -3,12 +3,15 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import LogInConTexProvider from "./context/LogInContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <React.StrictMode>
         <BrowserRouter>
-            <App />
+            <LogInConTexProvider>
+                <App />
+            </LogInConTexProvider>
         </BrowserRouter>
     </React.StrictMode>
 );
