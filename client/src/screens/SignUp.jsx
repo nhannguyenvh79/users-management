@@ -48,9 +48,7 @@ function SignUp() {
 
     const confirmSignUp = async () => {
         if (seconds > 1)
-            window.alert(
-                "Signup successfulSignup successfu! Please Login to use services!"
-            );
+            window.alert("Signup successful! Please Login to use services!");
         setSeconds(0);
         try {
             const res = await signUpConfirm(email, password, tokenSignUp);
