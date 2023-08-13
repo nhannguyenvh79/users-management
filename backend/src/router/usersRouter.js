@@ -1,7 +1,8 @@
 import express from "express";
-import { v4 as uuid } from "uuid";
+import { ObjectId } from "mongodb";
 import data from "../data/mockData.js";
 import checkAuth from "../middleware/checkAuth.js";
+import { db } from "../db.js";
 
 export const usersRouter = express.Router();
 
@@ -10,136 +11,152 @@ let users = data;
 const auth1 = ["admin"];
 const auth2 = ["member", "admin"];
 
-usersRouter.get("/", checkAuth(auth2), (req, res) => {
-    let newUsers = handleSort(req.query.sortBy, req.query.sortField);
+usersRouter.get("/", checkAuth(auth2), async (req, res) => {
+    const { page, sortBy, sortField, searchKey } = req.query;
 
-    newUsers = handleFilter(newUsers, req.query.searchKey);
-
-    const perPage = 6;
-    const page = +req.query.page;
-    const total = +newUsers.length;
-    const totalPages = total / perPage;
-    const data = newUsers.slice(page * perPage - perPage, page * perPage);
-    res.json({
-        page,
-        perPage,
-        total,
-        totalPages,
-        data,
-    });
-});
-
-usersRouter.get("/all", checkAuth(auth1), (req, res) => {
-    res.json({ users });
-});
-
-usersRouter.get("/:userId", checkAuth(auth2), (req, res) => {
-    const user = users.find((el) => el.id == req.params.userId);
-    if (user) {
-        res.json({
-            data: user,
-        });
-    } else {
-        res.json({
-            message: "not found",
-        });
-    }
-});
-
-usersRouter.post("/", checkAuth(auth1), (req, res) => {
-    if (req.body) {
-        const data = { ...req.body, id: uuid() };
-        users.push(data);
-        res.json({
-            status: "success",
-            message: "student data saved successfully",
-        });
-    } else {
-        res.json({ status: "failure", message: "something wrong" });
-    }
-});
-
-usersRouter.put("/:userId", checkAuth(auth1), (req, res) => {
-    const indexUser = users.findIndex((el) => el.id == req.params.userId);
-
-    if (indexUser === 0 || indexUser) {
-        users[indexUser] = {
-            ...users[indexUser],
-            ...req.body,
-        };
-        res.json({
-            message: "successfull",
-        });
-    } else {
-        res.json({
-            message: "not found",
-        });
-    }
-});
-usersRouter.put("/", checkAuth(auth1), (req, res) => {
-    if (req.body && req.body.data) {
-        users = req.body.data;
-        res.json({ message: "successfull" });
-    } else {
-        res.json({ message: "failure" });
-    }
-});
-
-usersRouter.delete("/:userId", checkAuth(auth1), (req, res) => {
-    let indexUser = users.findIndex((el) => el.id === +req.params.userId);
-    if (indexUser === 0 || indexUser) {
-        users.splice(indexUser, 1);
-        res.json({
-            message: "successfull",
-        });
-    } else {
-        res.json({
-            message: "not found",
-        });
-    }
-});
-
-const handleSort = (sortBy, SortField) => {
-    let termUsers = users.slice();
-    switch (SortField) {
+    let sortOptions = {};
+    switch (sortField) {
         case "first_name":
-            if (sortBy && SortField && sortBy === "asc") {
-                termUsers.sort((a, b) =>
-                    a[SortField].toUpperCase().localeCompare(
-                        b[SortField].toUpperCase()
-                    )
-                );
-            } else if (sortBy && SortField && sortBy === "desc") {
-                termUsers.sort((a, b) =>
-                    b[SortField].toUpperCase().localeCompare(
-                        a[SortField].toUpperCase()
-                    )
-                );
-            }
-            return termUsers;
-
+            sortOptions = { first_name: sortBy === "asc" ? 1 : -1 };
+            break;
         case "id":
-            if (sortBy && SortField && sortBy === "asc") {
-                termUsers.sort((a, b) => a[SortField] - b[SortField]);
-            } else if (sortBy && SortField && sortBy === "desc") {
-                termUsers.sort((a, b) => b[SortField] - a[SortField]);
-            }
-            return termUsers;
+            sortOptions = { _id: sortBy === "asc" ? 1 : -1 };
+            break;
 
         default:
-            if (sortBy && SortField && sortBy === "asc") {
-                termUsers.sort((a, b) => a[SortField] - b[SortField]);
-            } else if (sortBy && SortField && sortBy === "desc") {
-                termUsers.sort((a, b) => b[SortField] - a[SortField]);
-            }
-            return termUsers;
+            sortOptions = { _id: 1 };
     }
-};
 
-const handleFilter = (users, searchKey) => {
-    if (searchKey) {
-        return users.filter((user) => user.email.includes(searchKey));
-    } else {
-        return users;
+    try {
+        const userList = await db("users")
+            .find({
+                email: {
+                    $regex: searchKey,
+                    $options: "i",
+                },
+            })
+            .sort(sortOptions)
+            .toArray();
+
+        const perPage = 6;
+        const currentPage = +page;
+        const total = +userList.length;
+        const totalPages = total / perPage;
+        const data = userList.slice(
+            currentPage * perPage - perPage,
+            currentPage * perPage
+        );
+
+        res.json({
+            currentPage,
+            perPage,
+            total,
+            totalPages,
+            data,
+        });
+    } catch (error) {
+        res.json({ message: error });
     }
-};
+});
+
+usersRouter.get("/all", checkAuth(auth2), async (req, res) => {
+    try {
+        const users = await db("users").find({}).toArray();
+        res.json({ users });
+    } catch (error) {
+        res.json({ meassage: error });
+    }
+});
+
+usersRouter.get("/:userId", checkAuth(auth2), async (req, res) => {
+    try {
+        const user = await db("users")
+            .find({ _id: new ObjectId(req.params.userId) })
+            .toArray();
+
+        if (user) {
+            res.json({
+                data: user,
+            });
+        } else {
+            throw new Error("user not found");
+        }
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
+usersRouter.post("/", checkAuth(auth1), async (req, res) => {
+    const data = req.body;
+    try {
+        if (
+            req.body &&
+            req.body.first_name &&
+            req.body.last_name &&
+            req.body.email
+        ) {
+            await db("users").insertOne(data);
+            res.json({
+                status: "success",
+                message: "student data saved successfully",
+            });
+        } else {
+            throw new Error("something wrong with your information");
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+usersRouter.put("/:userId", checkAuth(auth1), async (req, res) => {
+    const id = req.params.userId;
+    const data = req.body;
+    console.log(id, data);
+
+    try {
+        await db("users").updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: data,
+            }
+        );
+
+        res.json({
+            message: "successfull",
+        });
+    } catch (error) {
+        res.json({ message: error });
+    }
+});
+
+usersRouter.put("/", async (req, res) => {
+    const data = req.body.data;
+    const newDocument = data.map(
+        (el) => (el = { ...el, _id: new ObjectId(el._id) })
+    );
+
+    try {
+        await db("users").deleteMany({});
+
+        await db("users").insertMany(newDocument);
+
+        res.json({ message: "successful" });
+    } catch (error) {
+        console.log(error);
+        res.json({ message: error });
+    }
+});
+
+usersRouter.delete("/:userId", checkAuth(auth1), async (req, res) => {
+    const id = req.params.userId;
+
+    try {
+        await db("users").deleteOne({ _id: new ObjectId(id) });
+
+        res.json({
+            message: "successfull",
+        });
+    } catch (error) {
+        res.json({ message: error });
+    }
+});

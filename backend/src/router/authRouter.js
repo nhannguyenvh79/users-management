@@ -1,35 +1,36 @@
 import express from "express";
-import { accounts } from "../data/mockData.js";
-import { v4 as uuid } from "uuid";
 import jwt from "jsonwebtoken";
+import { db } from "../db.js";
 
 const authRouter = express.Router();
 
-authRouter.post("/login", (req, res) => {
+authRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
     //check account:
+
     if (!email || !password) {
         return res
             .status(401)
             .json({ message: "Can not find email & password" });
     }
 
-    const existAccount = accounts.find(
-        (acc) => acc.email === email && acc.password === password
-    );
+    const existAccount = await db("accounts").findOne({
+        email: email,
+        password: password,
+    });
 
     if (!existAccount)
         return res.status(401).json({ message: "Invalid email & password" });
 
     //createtoken:
     const jwtPayload = {
-        id: existAccount.id,
+        id: existAccount._id,
         email: existAccount.email,
         type: existAccount.type,
     };
 
     const token = jwt.sign(jwtPayload, process.env.SECRET_KEY, {
-        expiresIn: "60s",
+        expiresIn: "120s",
     });
 
     res.json({
@@ -38,8 +39,12 @@ authRouter.post("/login", (req, res) => {
     });
 });
 
-authRouter.post("/signup", (req, res) => {
-    const existAccount = accounts.find((acc) => acc.email === req.body.email);
+authRouter.post("/signup", async (req, res) => {
+    const { email, password } = req.body;
+    const existAccount = await db("accounts").findOne({
+        email: email,
+        password: password,
+    });
 
     if (existAccount) {
         return res.json({ message: "Account already exists" });
@@ -47,7 +52,6 @@ authRouter.post("/signup", (req, res) => {
 
     if (!existAccount) {
         const jwtPayload = {
-            id: uuid(),
             type: "member",
             email: req.body.email,
         };
@@ -63,7 +67,7 @@ authRouter.post("/signup", (req, res) => {
     }
 });
 
-authRouter.post("/signup/confirm", (req, res) => {
+authRouter.post("/signup/confirm", async (req, res) => {
     const token = req.headers["x-access-token"];
     if (!token) {
         return res.status(400).json({
@@ -72,21 +76,19 @@ authRouter.post("/signup/confirm", (req, res) => {
     }
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        console.log(decoded);
         const email = decoded.email;
 
         if (email) {
             const newAccount = {
-                id: uuid(),
                 email: req.body.email,
                 password: req.body.password,
                 token: "",
                 type: "member",
             };
-            accounts.push(newAccount);
-            console.log(accounts);
+            await db("accounts").insertOne(newAccount);
+            res.json({ message: "successfully" });
         } else {
-            throw new Error({ message: "cannot access" });
+            throw new Error({ message: "cannot access, please signup again" });
         }
     } catch (error) {
         return res.status(401).json(error);

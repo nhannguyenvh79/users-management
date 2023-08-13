@@ -26,6 +26,7 @@ function LogIn() {
             setLogInValue(res);
             setError("");
             localStorage.setItem("accessToken", res.accessToken);
+            localStorage.setItem("account", JSON.stringify(res.account));
             navigate("/");
         } catch (error) {
             setError(error.response.data.message);

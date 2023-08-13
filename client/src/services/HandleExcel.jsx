@@ -7,29 +7,34 @@ import { Button, Modal, Table } from "react-bootstrap";
 
 export const ExportToExcelButton = (props) => {
     const exportToExcel = async () => {
-        const data = await fetchAllUsers();
+        try {
+            const res = await fetchAllUsers();
 
-        const worksheet = XLSX.utils.json_to_sheet(data.users);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Dữ liệu");
-        const wbout = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "binary",
-        });
+            const worksheet = XLSX.utils.json_to_sheet(res.users);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Dữ liệu");
+            const wbout = XLSX.write(workbook, {
+                bookType: "xlsx",
+                type: "binary",
+            });
 
-        const s2ab = (s) => {
-            const buf = new ArrayBuffer(s.length);
-            const view = new Uint8Array(buf);
-            for (let i = 0; i < s.length; i++) {
-                view[i] = s.charCodeAt(i) & 0xff;
-            }
-            return buf;
-        };
+            const s2ab = (s) => {
+                const buf = new ArrayBuffer(s.length);
+                const view = new Uint8Array(buf);
+                for (let i = 0; i < s.length; i++) {
+                    view[i] = s.charCodeAt(i) & 0xff;
+                }
+                return buf;
+            };
 
-        const blob = new Blob([s2ab(wbout)], {
-            type: "application/octet-stream",
-        });
-        saveAs(blob, "list_user.xlsx");
+            const blob = new Blob([s2ab(wbout)], {
+                type: "application/octet-stream",
+            });
+            saveAs(blob, "list_user.xlsx");
+        } catch (error) {
+            console.log(error);
+            window.location.reload();
+        }
     };
 
     return (
@@ -57,10 +62,10 @@ export const ImportExcelData = () => {
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
+            console.log(jsonData);
             const isCheck = jsonData.every(
                 (el) =>
-                    el.hasOwnProperty("id") &&
+                    el.hasOwnProperty("_id") &&
                     el.hasOwnProperty("first_name") &&
                     el.hasOwnProperty("last_name") &&
                     el.hasOwnProperty("email")
@@ -81,8 +86,12 @@ export const ImportExcelData = () => {
 
     const handleUpdateList = async () => {
         handleClose();
-        const res = await putUsers(data);
-        window.location.reload();
+        try {
+            const res = await putUsers(data);
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (

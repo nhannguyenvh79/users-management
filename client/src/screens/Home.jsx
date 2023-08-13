@@ -21,6 +21,9 @@ function HomePage() {
             <p>
                 <b>ADMIN ACCOUNT: </b>admin.react@gmail.com - 12345
             </p>
+            <p>
+                <b>EXPIRATION TIME: </b>2 mins
+            </p>
             <p className="mt-5">
                 <b>SIGN UP: </b> Member account only
             </p>

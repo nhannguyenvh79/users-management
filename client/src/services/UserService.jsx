@@ -68,6 +68,7 @@ const putUsers = (arr) => {
         }
     );
 };
+
 const deleteUser = (id) => {
     return axios.delete(`/api/v1/users/${id}`, {
         headers: {

@@ -126,8 +126,8 @@ function TableUsers(props) {
                                 users.length &&
                                 users.map((user) => {
                                     return (
-                                        <tr key={user.id}>
-                                            <td>{user.id}</td>
+                                        <tr key={user._id}>
+                                            <td>{user._id}</td>
                                             <td>{user.first_name}</td>
                                             <td>{user.last_name}</td>
                                             <td>{user.email}</td>
@@ -136,7 +136,7 @@ function TableUsers(props) {
                                                     "admin" && (
                                                     <>
                                                         <EditUserModal
-                                                            userId={user.id}
+                                                            userId={user._id}
                                                             firstName={
                                                                 user.first_name
                                                             }
@@ -149,7 +149,7 @@ function TableUsers(props) {
                                                             }
                                                         />
                                                         <DeleteUserModal
-                                                            userId={user.id}
+                                                            userId={user._id}
                                                             firstName={
                                                                 user.first_name
                                                             }

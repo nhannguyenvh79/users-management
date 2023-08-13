@@ -26,6 +26,7 @@ function AddUserModal() {
             setFirstName("");
             setLastName("");
             setShowToast(true);
+            window.location.reload();
         } catch (error) {
             if (error && error.response.data.message === "jwt expired")
                 navigate("/login");
@@ -73,9 +74,9 @@ function AddUserModal() {
                                 Email:
                             </InputGroup.Text>
                             <Form.Control
-                                aria-label="Job"
+                                aria-label="email"
                                 aria-describedby="inputGroup-sizing-default"
-                                placeholder="Type your job"
+                                placeholder="Type your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
