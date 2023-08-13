@@ -34,7 +34,7 @@ function ListUsers() {
 
     return (
         <Container>
-            <div className="d-flex  my-2 justify-content-between align-items-center flex-wrap">
+            <div className="d-flex  my-2 justify-content-between align-items-center flex-wrap min-w-520">
                 {logInValue.account.type === "admin" && (
                     <>
                         <div className="col-3 my-3 min-w-40 flex-0 ">

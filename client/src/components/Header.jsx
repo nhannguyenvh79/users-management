@@ -25,7 +25,7 @@ export default function Header() {
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto d-flex gap-20">
+                        <Nav className="me-auto d-flex gap-3">
                             <NavLink to="/" className={activeClass}>
                                 Home
                             </NavLink>
@@ -33,9 +33,11 @@ export default function Header() {
                                 Manage User
                             </NavLink>
                         </Nav>
-                        <Nav>
+                        <Nav className="my-3">
                             {!logInValue.account.email ? (
-                                <NavLink to="/login">Log In</NavLink>
+                                <NavLink to="/login" className={activeClass}>
+                                    Log In
+                                </NavLink>
                             ) : (
                                 <NavDropdown
                                     title={logInValue.account.email}

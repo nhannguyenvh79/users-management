@@ -81,94 +81,104 @@ function TableUsers(props) {
                 <Spinner animation="border" />
             ) : (
                 <>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>
-                                    <div
-                                        className="d-flex justify-content-between align-items-center"
-                                        onClick={() => {
-                                            sortBy === "asc"
-                                                ? handleSort("desc", "id")
-                                                : handleSort("asc", "id");
-                                        }}
-                                    >
-                                        ID
-                                        <FaSolidSort />
-                                    </div>
-                                </th>
-                                <th>
-                                    <div
-                                        className="d-flex justify-content-between align-items-center"
-                                        onClick={() => {
-                                            sortBy === "asc"
-                                                ? handleSort(
-                                                      "desc",
-                                                      "first_name"
-                                                  )
-                                                : handleSort(
-                                                      "asc",
-                                                      "first_name"
-                                                  );
-                                        }}
-                                    >
-                                        First Name
-                                        <FaSolidSort />
-                                    </div>
-                                </th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users &&
-                                users.length &&
-                                users.map((user) => {
-                                    return (
-                                        <tr key={user._id}>
-                                            <td>{user._id}</td>
-                                            <td>{user.first_name}</td>
-                                            <td>{user.last_name}</td>
-                                            <td>{user.email}</td>
-                                            <td>
-                                                {logInValue.account.type ===
-                                                    "admin" && (
-                                                    <>
-                                                        <EditUserModal
-                                                            userId={user._id}
-                                                            firstName={
-                                                                user.first_name
-                                                            }
-                                                            lastName={
-                                                                user.last_name
-                                                            }
-                                                            email={user.email}
-                                                            reloadTable={
-                                                                reloadTable
-                                                            }
-                                                        />
-                                                        <DeleteUserModal
-                                                            userId={user._id}
-                                                            firstName={
-                                                                user.first_name
-                                                            }
-                                                            lastName={
-                                                                user.last_name
-                                                            }
-                                                            email={user.email}
-                                                            reloadTable={
-                                                                reloadTable
-                                                            }
-                                                        />
-                                                    </>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                        </tbody>
-                    </Table>
+                    <div className="min-h-400 min-w-940">
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div
+                                            className="d-flex justify-content-between align-items-center"
+                                            onClick={() => {
+                                                sortBy === "asc"
+                                                    ? handleSort("desc", "id")
+                                                    : handleSort("asc", "id");
+                                            }}
+                                        >
+                                            ID
+                                            <FaSolidSort />
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                            className="d-flex justify-content-between align-items-center"
+                                            onClick={() => {
+                                                sortBy === "asc"
+                                                    ? handleSort(
+                                                          "desc",
+                                                          "first_name"
+                                                      )
+                                                    : handleSort(
+                                                          "asc",
+                                                          "first_name"
+                                                      );
+                                            }}
+                                        >
+                                            First Name
+                                            <FaSolidSort />
+                                        </div>
+                                    </th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {users &&
+                                    users.length &&
+                                    users.map((user) => {
+                                        return (
+                                            <tr key={user._id}>
+                                                <td>{user._id}</td>
+                                                <td>{user.first_name}</td>
+                                                <td>{user.last_name}</td>
+                                                <td>{user.email}</td>
+                                                <td>
+                                                    {logInValue.account.type ===
+                                                        "admin" && (
+                                                        <>
+                                                            <EditUserModal
+                                                                userId={
+                                                                    user._id
+                                                                }
+                                                                firstName={
+                                                                    user.first_name
+                                                                }
+                                                                lastName={
+                                                                    user.last_name
+                                                                }
+                                                                email={
+                                                                    user.email
+                                                                }
+                                                                reloadTable={
+                                                                    reloadTable
+                                                                }
+                                                            />
+                                                            <DeleteUserModal
+                                                                userId={
+                                                                    user._id
+                                                                }
+                                                                firstName={
+                                                                    user.first_name
+                                                                }
+                                                                lastName={
+                                                                    user.last_name
+                                                                }
+                                                                email={
+                                                                    user.email
+                                                                }
+                                                                reloadTable={
+                                                                    reloadTable
+                                                                }
+                                                            />
+                                                        </>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                            </tbody>
+                        </Table>
+                    </div>
                     <ReactPaginate
                         breakLabel="..."
                         nextLabel=" >"
